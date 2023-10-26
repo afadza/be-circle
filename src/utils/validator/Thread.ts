@@ -1,4 +1,5 @@
 import * as Joi from 'joi';
+import { join } from 'path';
 
 export const createThreadSchema = Joi.object({
   content: Joi.string().required(),
@@ -34,3 +35,16 @@ export const followingSchema = Joi.object({
 export const followerSchema = Joi.object({
 	followerToUser: Joi.number(),
 });
+
+
+export const registerSchema = Joi.object({
+  full_name: Joi.string(),
+  username: Joi.string(),
+  email: Joi.string(),
+  password: Joi.string()
+})
+
+export const loginSchema = Joi.object({
+  email: Joi.string(),
+  password: Joi.string()
+})

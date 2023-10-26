@@ -21,10 +21,10 @@ export class Users {
   @Column()
   password: string;
 
-  @Column()
+  @Column({nullable: true})
   photo_profile: string;
 
-  @Column()
+  @Column({nullable: true})
   bio: string;
 
   @CreateDateColumn()

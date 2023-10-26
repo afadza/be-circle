@@ -10,7 +10,9 @@ export default new (class UserService {
 
   async find(req: Request, res: Response): Promise<Response> {
     try {
-      const user = await this.UserRepository.find();
+      const user = await this.UserRepository.find({
+        relations: ['followerToUser', 'followingToUser'],
+      });
       return res.status(200).json(user);
     } catch (err) {
       return res.status(500).json({ error: 'Error while getting users' });
@@ -30,13 +32,13 @@ export default new (class UserService {
         email: value.email,
         password: value.password,
         photo_profile: value.photo_profile,
-        bio: value.bio
+        bio: value.bio,
       });
 
       const createUser = await this.UserRepository.save(users);
       res.status(200).json(createUser);
     } catch (err) {
-      console.log(error)
+      console.log(error);
       return res.status(500).json({ error: 'Error while creating users' });
     }
   }

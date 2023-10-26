@@ -5,6 +5,8 @@ import RepliesControllers from '../controllers/RepliesControllers';
 import LikesControllers from '../controllers/LikesControllers';
 import FollowerControllers from '../controllers/FollowerControllers';
 import FollowingControllers from '../controllers/FollowingControllers';
+import AuthControllers from '../controllers/AuthControllers';
+import AuthenticationMiddlewares from '../middlewares/Auth'
 
 const router = express.Router();
 
@@ -36,4 +38,7 @@ router.get('/following', FollowingControllers.find);
 router.post('/following', FollowingControllers.create);
 router.delete('/following/:id', FollowingControllers.delete);
 
+router.post('/register', AuthControllers.register);
+router.post('/login', AuthControllers.login);
+router.get('/auth/check', AuthenticationMiddlewares.Authentication, AuthControllers.checkToken);
 export default router;

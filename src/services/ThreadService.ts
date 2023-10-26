@@ -10,7 +10,7 @@ export default new (class ThreadService {
   async find(req: Request, res: Response): Promise<Response> {
     try {
       const threads = await this.ThreadRepository.find({
-        relations: ['createdById', 'replies', 'likes'],
+        relations: ['createdById', 'replies', 'likes', 'replies.userId'],
 
         order: {
           id: 'DESC',
@@ -48,7 +48,7 @@ export default new (class ThreadService {
     try {
       const id = Number(req.params.id);
       const thread = await this.ThreadRepository.findOne({
-        relations: ['createdById', 'replies', 'likes'],
+        relations: ['createdById', 'replies', 'likes', 'replies.userId'],
         where: {
           id: id,
         },
