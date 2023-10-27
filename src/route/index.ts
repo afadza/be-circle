@@ -6,13 +6,15 @@ import LikesControllers from '../controllers/LikesControllers';
 import FollowerControllers from '../controllers/FollowerControllers';
 import FollowingControllers from '../controllers/FollowingControllers';
 import AuthControllers from '../controllers/AuthControllers';
-import AuthenticationMiddlewares from '../middlewares/Auth'
+import AuthenticationMiddlewares from '../middlewares/Auth';
+// import { upload } from '../middlewares/UploadFile';
+import UploadImage from '../middlewares/UploadFile';
 
 const router = express.Router();
 
 router.get('/threads', ThreadControllers.find);
 router.get('/thread/:id', ThreadControllers.findOne);
-router.post('/thread', ThreadControllers.create);
+router.post('/thread', AuthenticationMiddlewares.Authentication, UploadImage.single('image'), ThreadControllers.create);
 router.patch('/thread/:id', ThreadControllers.update);
 router.delete('/thread/:id', ThreadControllers.delete);
 

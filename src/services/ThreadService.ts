@@ -3,6 +3,8 @@ import { Threads } from '../entities/threads';
 import { AppDataSource } from '../data-source';
 import { Request, Response } from 'express';
 import { createThreadSchema } from '../utils/validator/Thread';
+// import { v2 as cloudinary } from 'cloudinary';
+const cloudinary = require('cloudinary').v2;
 
 export default new (class ThreadService {
   private readonly ThreadRepository: Repository<Threads> = AppDataSource.getRepository(Threads);
@@ -24,15 +26,43 @@ export default new (class ThreadService {
 
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      const data = req.body;
-      const { error, value } = createThreadSchema.validate(data);
+      // const image = res.locals.filename;
+      // const image = req.file.path;
+      console.log(res.locals);
+      const data = {
+        content: req.body.content,
+        image: req.file.path,
+        createdById: res.locals.logingSession.user.id,
+        // createdById: res.locals.logingSession.user.id,
+        // createdById: {
+        //   id: logingSession.createdById.id,
+        // },
+      };
+      // const loginSession = res.locals.logingSession;
+      const { error } = createThreadSchema.validate(data);
+
       if (error) {
         return res.status(400).json({ Error: error.details[0].message });
       }
+
+      cloudinary.config({
+        cloud_name: 'dsus7hrnk',
+        api_key: '758959438735139',
+        api_secret: 'WCLAlQ8H7kIIDDLF_imQIDJHW_Q',
+      });
+
+      const cloudinaryResponse = await cloudinary.uploader.upload(data.image, { folder: 'threads' });
+
+      // console.log('cloudinary response', cloudinaryResponse);
+
       const thread = this.ThreadRepository.create({
-        content: value.content,
-        image: value.image,
-        createdById: value.createdById,
+        content: data.content,
+        image: cloudinaryResponse.secure_url,
+        createdById: res.locals.logingSession.user.id,
+        // createdById: {
+        //   id: loginSession.user.id,
+        // },
+        // createdById: res.locals.logingSession.user.id,
       });
 
       const createdThread = await this.ThreadRepository.save(thread);
