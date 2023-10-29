@@ -15,10 +15,10 @@ export class Threads {
   @Column()
   image: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'date' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'date' })
   updated_at: Date;
 
   @ManyToOne(() => Users, (user) => user.threads)
