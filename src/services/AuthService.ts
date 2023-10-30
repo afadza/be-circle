@@ -50,10 +50,11 @@ export default new (class AuthServices {
 
       const { error, value } = loginSchema.validate(data);
       const isCheckEmail = await this.AuthRepository.findOne({
+        relations: ['followerToUser', 'followingToUser'],
         where: {
           email: value.email,
         },
-        select: ['id', 'full_name', 'email', 'password'],
+        // select: ['id', 'full_name', 'email', 'password'],
       });
 
       if (!isCheckEmail) return res.status(400).json({ error: 'Email not found' });
@@ -67,6 +68,8 @@ export default new (class AuthServices {
         full_name: isCheckEmail.full_name,
         username: isCheckEmail.username,
         email: isCheckEmail.email,
+        followerToUser: isCheckEmail.followerToUser,
+        followingToUser: isCheckEmail.followingToUser,
       });
 
       const token = await jwt.sign({ user }, 'secret', { expiresIn: '1h' });
@@ -84,11 +87,18 @@ export default new (class AuthServices {
     try {
       const logingSession = res.locals.logingSession;
 
+      console.log(logingSession);
+      
+
       const user = await this.AuthRepository.findOne({
+        relations: ['followerToUser', 'followingToUser'],
         where: {
-          id: logingSession.id,
+          id: logingSession.user.id,
         },
       });
+
+      console.log(user);
+      
 
       return res.status(200).json({
         message: 'you are logging in',

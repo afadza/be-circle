@@ -3,6 +3,7 @@ import { Replies } from '../entities/replies';
 import { AppDataSource } from '../data-source';
 import { createRepliesSchema } from '../utils/validator/Thread';
 import { Request, Response } from 'express';
+const cloudinary = require('cloudinary').v2;
 
 export default new (class RepliesService {
   private readonly RepliesRepository: Repository<Replies> = AppDataSource.getRepository(Replies);
@@ -21,17 +22,33 @@ export default new (class RepliesService {
 
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      const data = req.body;
-      const { error, value } = createRepliesSchema.validate(data);
+      
+      const data = {
+        content: req.body.content,
+        image: req.file.path,
+        userId: res.locals.logingSession.user.id,
+        threadId: req.body.threadId
+      };
+
+      const { error } = createRepliesSchema.validate(data);
+
       if (error) {
         return res.status(400).json({ Error: error.details[0].message });
       }
 
+      cloudinary.config({
+        cloud_name: 'dsus7hrnk',
+        api_key: '758959438735139',
+        api_secret: 'WCLAlQ8H7kIIDDLF_imQIDJHW_Q',
+      });
+
+      const cloudinaryResponse = await cloudinary.uploader.upload(data.image, { folder: 'replies' });
+
       const replies = this.RepliesRepository.create({
-        image: value.image,
-        content: value.content,
-        userId: value.userId,
-        threadId: value.threadId,
+       content: data.content,
+       image: cloudinaryResponse.secure_url,
+       userId: res.locals.logingSession.user.id,
+       threadId: data.threadId
       });
 
       const createReplies = await this.RepliesRepository.save(replies);

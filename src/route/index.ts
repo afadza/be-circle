@@ -25,7 +25,7 @@ router.patch('/user/:id', UserControllers.update);
 router.delete('/user/:id', UserControllers.delete);
 
 router.get('/replies', RepliesControllers.find);
-router.post('/reply', RepliesControllers.create);
+router.post('/reply', AuthenticationMiddlewares.Authentication, UploadImage.single('image'), RepliesControllers.create);
 router.delete('/reply/:id', RepliesControllers.delete);
 
 router.get('/likes', LikesControllers.find);

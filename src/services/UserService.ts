@@ -47,6 +47,7 @@ export default new (class UserService {
     try {
       const id = Number(req.params.id);
       const user = await this.UserRepository.findOne({
+        relations: ['followerToUser', 'followingToUser'],
         where: { id: id },
       });
       res.status(200).json(user);
