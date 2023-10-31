@@ -27,9 +27,29 @@ export default new (class LikesServices {
         return res.status(400).json({ Error: error.details[0].message });
       }
 
+      const loginSession = res.locals.logingSession;
+
+      const likeSelected: Likes | null  = await this.LikesRepository.findOne({
+        where: {
+          userId: {
+            id: loginSession.user.id,
+          },
+          threadId: {
+            id: value.threadId,
+          }
+        }
+      })
+
+      if (likeSelected) {
+        await this.LikesRepository.remove(likeSelected)
+        return res.status(200).json({message: 'Like remove'});
+      }
+
       const likes = this.LikesRepository.create({
-        userId: value.userId,
         threadId: value.threadId,
+        userId: {
+          id: loginSession.user.id
+        }
       });
 
       const createLikes = await this.LikesRepository.save(likes);
@@ -54,4 +74,5 @@ export default new (class LikesServices {
       res.status(500).json({ error: 'Bad Request' });
     }
   }
+
 })();

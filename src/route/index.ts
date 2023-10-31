@@ -29,7 +29,7 @@ router.post('/reply', AuthenticationMiddlewares.Authentication, UploadImage.sing
 router.delete('/reply/:id', RepliesControllers.delete);
 
 router.get('/likes', LikesControllers.find);
-router.post('/like', LikesControllers.create);
+router.post('/like', AuthenticationMiddlewares.Authentication, LikesControllers.create);
 router.delete('/like/:id', LikesControllers.delete);
 
 router.get('/followers', FollowerControllers.find);

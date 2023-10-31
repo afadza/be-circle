@@ -12,6 +12,9 @@ export default new (class RepliesService {
     try {
       const replies = await this.RepliesRepository.find({
         relations: ['userId', 'threadId'],
+        order: {
+          id: 'DESC',
+        },
       });
       return res.status(200).json(replies);
     } catch (err) {
@@ -22,12 +25,11 @@ export default new (class RepliesService {
 
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      
       const data = {
         content: req.body.content,
         image: req.file.path,
         userId: res.locals.logingSession.user.id,
-        threadId: req.body.threadId
+        threadId: req.body.threadId,
       };
 
       const { error } = createRepliesSchema.validate(data);
@@ -45,10 +47,10 @@ export default new (class RepliesService {
       const cloudinaryResponse = await cloudinary.uploader.upload(data.image, { folder: 'replies' });
 
       const replies = this.RepliesRepository.create({
-       content: data.content,
-       image: cloudinaryResponse.secure_url,
-       userId: res.locals.logingSession.user.id,
-       threadId: data.threadId
+        content: data.content,
+        image: cloudinaryResponse.secure_url,
+        userId: res.locals.logingSession.user.id,
+        threadId: data.threadId,
       });
 
       const createReplies = await this.RepliesRepository.save(replies);

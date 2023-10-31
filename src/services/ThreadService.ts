@@ -3,7 +3,6 @@ import { Threads } from '../entities/threads';
 import { AppDataSource } from '../data-source';
 import { Request, Response } from 'express';
 import { createThreadSchema } from '../utils/validator/Thread';
-// import { v2 as cloudinary } from 'cloudinary';
 const cloudinary = require('cloudinary').v2;
 
 export default new (class ThreadService {
@@ -12,8 +11,15 @@ export default new (class ThreadService {
   async find(req: Request, res: Response): Promise<Response> {
     try {
       const threads = await this.ThreadRepository.find({
-        relations: ['createdById', 'replies', 'likes', 'replies.userId'],
-
+        relations: ['createdById', 'replies', 'likes.userId', 'replies.userId'],
+        select: {
+          likes: {
+            id: true,
+            userId: {
+              id: true,
+            },
+          },
+        },
         order: {
           id: 'DESC',
         },
@@ -26,19 +32,13 @@ export default new (class ThreadService {
 
   async create(req: Request, res: Response): Promise<Response> {
     try {
-      // const image = res.locals.filename;
-      // const image = req.file.path;
-      console.log(res.locals);
+      
       const data = {
         content: req.body.content,
-        image: req.file.path,
+        image: req?.file.path,
         createdById: res.locals.logingSession.user.id,
-        // createdById: res.locals.logingSession.user.id,
-        // createdById: {
-        //   id: logingSession.createdById.id,
-        // },
       };
-      // const loginSession = res.locals.logingSession;
+
       const { error } = createThreadSchema.validate(data);
 
       if (error) {
@@ -53,16 +53,10 @@ export default new (class ThreadService {
 
       const cloudinaryResponse = await cloudinary.uploader.upload(data.image, { folder: 'threads' });
 
-      // console.log('cloudinary response', cloudinaryResponse);
-
       const thread = this.ThreadRepository.create({
         content: data.content,
         image: cloudinaryResponse.secure_url,
         createdById: res.locals.logingSession.user.id,
-        // createdById: {
-        //   id: loginSession.user.id,
-        // },
-        // createdById: res.locals.logingSession.user.id,
       });
 
       const createdThread = await this.ThreadRepository.save(thread);
@@ -78,7 +72,7 @@ export default new (class ThreadService {
     try {
       const id = Number(req.params.id);
       const thread = await this.ThreadRepository.findOne({
-        relations: ['createdById', 'replies', 'likes', 'replies.userId'],
+        relations: ['createdById', 'replies', 'likes.userId', 'replies.userId'],
         where: {
           id: id,
         },
