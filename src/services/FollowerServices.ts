@@ -28,7 +28,7 @@ export default new (class FollowerServices {
       }
 
       const follower = this.FollowerRepository.create({
-        followerToUser: value.followerToUser
+        following: value.following
       });
 
       const createLikes = await this.FollowerRepository.save(follower);

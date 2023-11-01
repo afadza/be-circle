@@ -27,7 +27,7 @@ export default new (class AuthServices {
 
       const hashPassword = await bcrypt.hash(value.password, 10);
 
-      const user =  this.AuthRepository.create({
+      const user = this.AuthRepository.create({
         username: value.username,
         full_name: value.full_name,
         email: value.email,
@@ -50,7 +50,7 @@ export default new (class AuthServices {
 
       const { error, value } = loginSchema.validate(data);
       const isCheckEmail = await this.AuthRepository.findOne({
-        relations: ['followerToUser', 'followingToUser'],
+        relations: ['following', 'followers'],
         where: {
           email: value.email,
         },
@@ -68,8 +68,8 @@ export default new (class AuthServices {
         full_name: isCheckEmail.full_name,
         username: isCheckEmail.username,
         email: isCheckEmail.email,
-        followerToUser: isCheckEmail.followerToUser,
-        followingToUser: isCheckEmail.followingToUser,
+        following: isCheckEmail.following,
+        followers: isCheckEmail.followers,
       });
 
       const token = await jwt.sign({ user }, 'secret', { expiresIn: '1h' });
@@ -87,18 +87,12 @@ export default new (class AuthServices {
     try {
       const logingSession = res.locals.logingSession;
 
-      console.log(logingSession);
-      
-
       const user = await this.AuthRepository.findOne({
-        relations: ['followerToUser', 'followingToUser'],
+        relations: ['following', 'followers'],
         where: {
           id: logingSession.user.id,
         },
       });
-
-      console.log(user);
-      
 
       return res.status(200).json({
         message: 'you are logging in',

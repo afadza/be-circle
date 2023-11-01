@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany,JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany,JoinColumn, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Replies } from './replies';
 import { Threads } from './threads';
 import { Likes } from './likes';
@@ -42,17 +42,33 @@ export class Users {
   @OneToMany(() => Likes, (like) => like.threadId)
   likes: Likes[];
 
-	@OneToMany(() => Follow, (follow) => follow.followingToUser, {
-		onUpdate: "CASCADE",
-		onDelete: "CASCADE",
-	})
-	@JoinColumn()
-	followingToUser: Follow[];
+	// @OneToMany(() => Follow, (follow) => follow.followers, {
+	// 	onUpdate: "CASCADE",
+	// 	onDelete: "CASCADE",
+	// })
+	// @JoinColumn()
+	// followers: Follow[];
 
-	@OneToMany(() => Follow, (follow) => follow.followerToUser, {
-		onUpdate: "CASCADE",
-		onDelete: "CASCADE",
-	})
-	@JoinColumn()
-	followerToUser: Follow[];
+	// @OneToMany(() => Follow, (follow) => follow.following, {
+	// 	onUpdate: "CASCADE",
+	// 	onDelete: "CASCADE",
+	// })
+	// @JoinColumn()
+	// following: Follow[];
+  @ManyToMany(() => Users, (user) => user.following)
+  @JoinTable({
+    name: "followers",
+    joinColumn: {
+      name: "follower_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "following_id",
+      referencedColumnName: "id",
+    },
+  })
+  followers: Users[];
+
+  @ManyToMany(() => Users, (user) => user.followers)
+  following: Users[];
 }

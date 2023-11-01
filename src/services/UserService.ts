@@ -11,7 +11,7 @@ export default new (class UserService {
   async find(req: Request, res: Response): Promise<Response> {
     try {
       const user = await this.UserRepository.find({
-        relations: ['followerToUser', 'followingToUser'],
+        relations: ['following', 'followers'],
       });
       return res.status(200).json(user);
     } catch (err) {
@@ -45,9 +45,9 @@ export default new (class UserService {
 
   async findOne(req: Request, res: Response): Promise<Response> {
     try {
-      const id = Number(req.params.id);
+      const id = res.locals.logingSession;
       const user = await this.UserRepository.findOne({
-        relations: ['followerToUser', 'followingToUser'],
+        relations: ['following', 'followers'],
         where: { id: id },
       });
       res.status(200).json(user);
@@ -94,6 +94,44 @@ export default new (class UserService {
       return res.status(200).json(response);
     } catch (err) {
       return res.status(500).json({ error: 'Error while deleting user' });
+    }
+  }
+
+  async follow(req: Request, res: Response): Promise<Response> {
+    try {
+      const loginSession = res.locals.logingSession;
+      const followingId = Number(req.body.followingId);
+
+      const follower = await this.UserRepository.findOne({
+        where: { id: loginSession.user.id },
+        relations: ['following'],
+      });
+      const following = await this.UserRepository.findOne({
+        where: { id: followingId },
+      });
+
+      if (!follower || !following) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Check if the follower is already following the user
+      const isFollowing = follower.following.some((user) => user.id === following.id);
+
+      if (isFollowing) {
+        // If they are already following, unfollow
+        follower.following = follower.following.filter((user) => user.id !== following.id);
+      } else {
+        // If they are not following yet, follow
+        follower.following.push(following);
+      }
+
+      await this.UserRepository.save(follower);
+
+      return res.status(200).json(follower);
+    } catch (error) {
+      console.log(error);
+      
+      return res.status(500).json({ error: 'Error while following/unfollowing user' });
     }
   }
 })();

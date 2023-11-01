@@ -24,6 +24,8 @@ router.post('/user', UserControllers.create);
 router.patch('/user/:id', UserControllers.update);
 router.delete('/user/:id', UserControllers.delete);
 
+router.post("/follow/", AuthenticationMiddlewares.Authentication, UserControllers.follow);
+
 router.get('/replies', RepliesControllers.find);
 router.post('/reply', AuthenticationMiddlewares.Authentication, UploadImage.single('image'), RepliesControllers.create);
 router.delete('/reply/:id', RepliesControllers.delete);
@@ -37,7 +39,7 @@ router.post('/follower', FollowerControllers.create);
 router.delete('/follower/:id', FollowerControllers.delete);
 
 router.get('/following', FollowingControllers.find);
-router.post('/following', FollowingControllers.create);
+router.post('/following', AuthenticationMiddlewares.Authentication, FollowingControllers.create);
 router.delete('/following/:id', FollowingControllers.delete);
 
 router.post('/register', AuthControllers.register);
