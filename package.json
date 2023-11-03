@@ -12,8 +12,11 @@
     "typescript": "4.5.2"
   },
   "dependencies": {
+    "amqp": "^0.2.7",
+    "amqplib": "^0.10.3",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.41.0",
+    "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "joi": "^17.11.0",
@@ -26,6 +29,7 @@
   },
   "scripts": {
     "start": "nodemon src/index.ts",
+    "worker": "nodemon src/worker/index.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npx typeorm-ts-node-commonjs migration:generate src/migration/MyMigration -d src/data-source.ts",
     "migration:run": "npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts"

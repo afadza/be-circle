@@ -9,10 +9,10 @@ export class Threads {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({nullable: true})
   content: string;
 
-  @Column()
+  @Column({nullable: true})
   image: string;
 
   @CreateDateColumn({ type: 'date' })

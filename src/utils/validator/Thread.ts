@@ -2,22 +2,22 @@ import * as Joi from 'joi';
 
 export const createThreadSchema = Joi.object({
   content: Joi.string(),
-  image: Joi.string().allow('', null),
+  image: Joi.string(),
   createdById: Joi.number()
 });
 
 export const createUserSchema = Joi.object({
-  username: Joi.string(),
-  full_name: Joi.string(),
-  email: Joi.string(),
-  password: Joi.string(),
-  photo_profile: Joi.string(),
-  bio: Joi.string()
+  username: Joi.string().allow('', null),
+  full_name: Joi.string().allow('', null),
+  email: Joi.string().allow('', null),
+  password: Joi.string().allow('', null),
+  photo_profile: Joi.string().allow('', null),
+  bio: Joi.string().allow('', null),
 });
 
 export const createRepliesSchema = Joi.object({
-  image: Joi.string().required(),
-  content: Joi.string().required(),
+  image: Joi.string(),
+  content: Joi.string(),
   userId: Joi.number(),
   threadId: Joi.number()
 })

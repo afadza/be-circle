@@ -45,11 +45,12 @@ export default new (class UserService {
 
   async findOne(req: Request, res: Response): Promise<Response> {
     try {
-      const id = res.locals.logingSession;
+      const id = Number(req.params.id);
       const user = await this.UserRepository.findOne({
         relations: ['following', 'followers'],
         where: { id: id },
       });
+
       res.status(200).json(user);
     } catch (err) {
       return res.status(500).json({ error: 'Error while finding user' });
