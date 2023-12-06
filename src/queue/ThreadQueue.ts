@@ -23,7 +23,7 @@ export default new (class ThreadQueue {
 			const payload: QueuePayload = {
 				content: data.content,
 				image: data.image,
-				createdById: logginSession.id,
+				createdById: logginSession.user.id,
 			};
 
 

@@ -76,6 +76,11 @@ export default new (class ThreadService {
         where: {
           id: id,
         },
+        order: {
+          'replies': {
+            id: 'DESC'
+          }
+        },
       });
       return res.status(200).json(thread);
     } catch (error) {

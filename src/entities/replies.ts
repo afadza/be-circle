@@ -14,10 +14,10 @@ export class Replies {
   @ManyToOne(() => Threads, (thread) => thread.replies)
   threadId: Threads;
 
-  @Column()
+  @Column({ nullable: true })
   image: string;
 
-  @Column()
+  @Column({ nullable: true })
   content: string;
 
   @CreateDateColumn({ type: 'date' })

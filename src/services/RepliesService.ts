@@ -13,7 +13,7 @@ export default new (class RepliesService {
       const replies = await this.RepliesRepository.find({
         relations: ['userId', 'threadId'],
         order: {
-          id: 'DESC',
+         id: 'DESC',
         },
       });
       return res.status(200).json(replies);
@@ -27,7 +27,7 @@ export default new (class RepliesService {
     try {
       const data = {
         content: req.body.content,
-        image: req.file.path,
+        image: req.file ? req.file.path : null,
         userId: res.locals.logingSession.user.id,
         threadId: req.body.threadId,
       };
@@ -44,17 +44,21 @@ export default new (class RepliesService {
         api_secret: 'WCLAlQ8H7kIIDDLF_imQIDJHW_Q',
       });
 
-      const cloudinaryResponse = await cloudinary.uploader.upload(data.image, { folder: 'replies' });
+      // Handle Cloudinary upload only if there is a file
+      if (req.file && req.file.path) {
+        const cloudinaryResponse = await cloudinary.uploader.upload(data.image, { folder: 'replies' });
+        data.image = cloudinaryResponse.secure_url;
+      }
 
       const replies = this.RepliesRepository.create({
         content: data.content,
-        image: cloudinaryResponse.secure_url,
+        image: data.image,
         userId: res.locals.logingSession.user.id,
         threadId: data.threadId,
       });
 
       const createReplies = await this.RepliesRepository.save(replies);
-      res.status(200).json(createReplies);
+      return res.status(200).json(createReplies);
     } catch (err) {
       return res.status(500).json({ error: 'Error while creating replies' });
     }
