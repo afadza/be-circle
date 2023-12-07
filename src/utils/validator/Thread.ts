@@ -1,9 +1,9 @@
 import * as Joi from 'joi';
 
 export const createThreadSchema = Joi.object({
-  content: Joi.string(),
-  image: Joi.string(),
-  createdById: Joi.number()
+  content: Joi.string().allow('', null),
+  image: Joi.string().allow('', null),
+  createdById: Joi.number().allow('', null)
 });
 
 export const createUserSchema = Joi.object({
